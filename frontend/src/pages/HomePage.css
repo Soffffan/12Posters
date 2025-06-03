@@ -1,0 +1,88 @@
+.home-container {
+  background-color: #231f20;
+  min-height: 100vh;
+}
+
+.home-content {
+  max-width: 1400px;
+  width: 100%;
+}
+
+.filter-section {
+  margin-bottom: 32px;
+}
+
+.filter-button {
+  background-color: #dd2d4a;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filter-button:hover {
+  background-color: #c4243f;
+}
+
+.films-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+  margin-top: 32px;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .films-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+  }
+  .film-title {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-content {
+    font-size: 14px;
+  }
+  
+  .films-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+  
+  .filter-button {
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .films-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  .home-container {
+    font-size: 12px;
+  }
+}
+
+/* Стили для состояний загрузки и ошибок */
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 18px;
+  color: white;
+}
+
+.error-message {
+  color: #dd2d4a;
+  background-color: rgba(221, 45, 74, 0.1);
+  border-radius: 8px;
+  margin: 20px 0;
+}

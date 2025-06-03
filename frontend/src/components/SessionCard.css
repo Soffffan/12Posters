@@ -1,0 +1,110 @@
+.session-card {
+  display: flex;
+  align-items: center;
+  background-color: #2a2a2a;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid #444;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.session-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.session-side {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  min-width: 300px;
+}
+
+.side-poster {
+  width: 60px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.cinema-title,
+.film-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.session-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  padding: 20px;
+  gap: 20px;
+}
+
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.session-time {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.session-date {
+  color: #aaa;
+  font-size: 16px;
+}
+
+.session-price {
+  color: #e50914;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+.session-button {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.session-button:hover {
+  background-color: #b8070f;
+}
+
+@media (max-width: 768px) {
+  .session-card {
+    flex-direction: column;
+  }
+  
+  .session-side {
+    width: 100%;
+    min-width: auto;
+    justify-content: center;
+  }
+  
+  .session-main {
+    width: 100%;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+  
+  .session-info {
+    align-items: center;
+  }
+}

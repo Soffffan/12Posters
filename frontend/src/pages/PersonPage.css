@@ -1,0 +1,163 @@
+.person-page {
+  background-color: #231f20;
+  color: #ffffff;
+  min-height: 100vh;
+  padding: 0;
+}
+
+.person-layout {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* Фиксированное фото слева */
+.person-photo-container {
+  flex-shrink: 0;
+  position: sticky;
+  top: 40px;
+  width: 300px;
+}
+
+.person-photo-wrapper {
+  background-color: #3a3a3a;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 3/4;
+}
+
+.person-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Скроллящийся контент справа */
+.person-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.person-info {
+  margin-bottom: 50px;
+}
+
+.person-name {
+  font-size: 48px;
+  font-weight: 600;
+  margin: 0 0 40px 0;
+  color: #ffffff;
+}
+
+.person-details {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.detail-value {
+  font-size: 16px;
+  color: #ffffff;
+  margin: 0;
+}
+
+.filmography-section {
+  margin-top: 50px;
+}
+
+.filmography-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 30px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #555555;
+}
+
+.films-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .person-layout {
+    gap: 30px;
+  }
+  
+  .person-photo-container {
+    width: 250px;
+  }
+  
+  .films-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .person-layout {
+    flex-direction: column;
+    padding: 30px 15px;
+    gap: 30px;
+  }
+  
+  .person-photo-container {
+    position: static;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .person-name {
+    font-size: 36px;
+  }
+  
+  .films-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .person-name {
+    font-size: 28px;
+  }
+  
+  .person-photo-container {
+    max-width: 250px;
+  }
+  
+  .films-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+.person-page-loading,
+.person-page-error {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
