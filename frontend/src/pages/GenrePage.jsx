@@ -138,7 +138,7 @@ const GenrePage = () => {
   return (
     <div className="genre-page">
       <div className="genre-content">
-        <h1 className="genre-title">{genreData.name}</h1>
+        <p className="genre-title">{genreData.name}</p>
         
         <div className="genre-description">
           <p>{genreData.description}</p>

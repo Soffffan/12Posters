@@ -41,12 +41,18 @@ html, body, #root {
   background: #5a5458;
 }
 
-/* Focus styles */
+/* Обычные кнопки и их фокус */
 button:focus,
 input:focus {
   outline: 2px solid #dd2d4a;
   outline-offset: 2px;
 }
+
+/* Отключаем фокус для кнопок вкладок */
+button.no-focus:focus {
+  outline: none;
+}
+
 
 /* Link styles */
 a {

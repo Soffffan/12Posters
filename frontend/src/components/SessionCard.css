@@ -1,110 +1,113 @@
-.session-card {
+.sessions-container {
   display: flex;
-  align-items: center;
-  background-color: #2a2a2a;
-  border-radius: 15px;
-  overflow: hidden;
-  border: 1px solid #444;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.session-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
-
-.session-side {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 20px;
-  min-width: 300px;
-}
-
-.side-poster {
-  width: 60px;
-  height: 90px;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.cinema-title,
-.film-title {
-  color: white;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.session-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex: 1;
-  padding: 20px;
+  flex-direction: column;
   gap: 20px;
 }
 
-.session-info {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+.cinema-sessions-block {
+  background-color: #555;
+  border-radius: 8px;
+  padding: 20px;
 }
 
-.session-time {
+.cinema-header {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #666;
+}
+
+.cinema-name {
+  font-size: 1.2rem;
+  font-weight: 600;
   color: white;
-  font-size: 24px;
-  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  margin-bottom: 5px;
+}
+
+.cinema-name:hover {
+  color: #dd2d4a;
+}
+
+.cinema-info {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.cinema-address,
+.cinema-metro {
+  display: block;
+}
+
+.date-sessions {
+  margin-bottom: 20px;
+}
+
+.date-sessions:last-child {
+  margin-bottom: 0;
 }
 
 .session-date {
-  color: #aaa;
-  font-size: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.session-time-block {
+  background-color: #dd2d4a;
+  color: white;
+  padding: 10px 8px;
+  border-radius: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.session-time-block:hover {
+  background-color: #c02440;
+}
+
+.session-time {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 
 .session-price {
-  color: #e50914;
-  font-size: 24px;
-  font-weight: bold;
-  margin-right: 20px;
+  font-size: 0.85rem;
+  opacity: 0.9;
 }
 
-.session-button {
-  background-color: #e50914;
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 12px 25px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  white-space: nowrap;
-}
-
-.session-button:hover {
-  background-color: #b8070f;
-}
-
+/* Адаптивность */
 @media (max-width: 768px) {
-  .session-card {
+  .sessions-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+  }
+  
+  .session-time-block {
+    padding: 8px 6px;
+  }
+  
+  .session-time {
+    font-size: 0.9rem;
+  }
+  
+  .session-price {
+    font-size: 0.8rem;
+  }
+  
+  .cinema-info {
     flex-direction: column;
-  }
-  
-  .session-side {
-    width: 100%;
-    min-width: auto;
-    justify-content: center;
-  }
-  
-  .session-main {
-    width: 100%;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    text-align: center;
-  }
-  
-  .session-info {
-    align-items: center;
+    gap: 5px;
   }
 }

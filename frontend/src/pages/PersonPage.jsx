@@ -138,7 +138,7 @@ const PersonPage = () => {
         {/* Скроллящийся контент справа */}
         <div className="person-content">
           <div className="person-info">
-            <h1 className="person-name">{personData.name}</h1>
+            <p className="person-name">{personData.name}</p>
             
             <div className="person-details">
               <div className="detail-group">
@@ -154,14 +154,14 @@ const PersonPage = () => {
           </div>
 
           <div className="filmography-section">
-            <h2 className="filmography-title">Фильмография</h2>
-            <div className="films-grid">
+            <p className="filmography-title">Фильмография</p>
+            <div className="films-grid_1">
               {films.length > 0 ? (
                 films.map((film) => (
                   <FilmCard 
                     key={film.id} 
                     id={film.id}
-                    title={film.title} 
+                    title={film.rolesText} 
                     img={film.poster} 
                   />
                 ))
