@@ -25,7 +25,7 @@
 }
 
 .genre-description p {
-  font-size: 20px;
+  font-size: 1.1rem;
   line-height: 1.6;
   color: #ffffff;
   margin: 0 0 20px 0;
@@ -37,7 +37,7 @@
 }
 
 .films-title {
-  font-size: 24px;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #ffffff;
   margin: 0 0 30px 0;

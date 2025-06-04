@@ -124,23 +124,16 @@ const SessionCard = ({ sessions, context }) => {
         {Object.entries(groupedSessions).map(([filmTitle, filmData]) => (
           <div key={filmTitle} className="film-sessions-block">
             <div className="film-header">
-              <div className="film-poster-container">
+              <div className="film-poster-container_2" onClick={() => handleFilmClick(filmData.film.id)}>
                 <img 
-                  className="film-poster-small" 
+                  className="film-poster-large" 
                   src={filmData.film.poster} 
                   alt={filmData.film.title}
                   onError={(e) => {
                     e.target.src = '/placeholder-poster.jpg';
                   }}
                 />
-              </div>
-              <div className="film-info">
-                <div 
-                  className="film-name"
-                  onClick={() => handleFilmClick(filmData.film.id)}
-                >
-                  {filmData.film.title}
-                </div>
+                <div className="film-name">{filmData.film.title}</div>
               </div>
             </div>
             

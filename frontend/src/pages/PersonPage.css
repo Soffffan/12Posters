@@ -7,10 +7,10 @@
 
 .person-layout {
   display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
-  gap: 40px;
+  max-width: 100%;
+  gap: 5%;
   align-items: flex-start;
+  padding: 20px;
 }
 
 /* Фиксированное фото слева */
@@ -67,14 +67,14 @@
 }
 
 .detail-label {
-  font-size: 16px;
+  font-size: 1.3rem;
   font-weight: 600;
   color: #ffffff;
   margin: 0;
 }
 
 .detail-value {
-  font-size: 16px;
+  font-size: 1.1rem;
   color: #ffffff;
   margin: 0;
 }
@@ -84,7 +84,7 @@
 }
 
 .filmography-title {
-  font-size: 24px;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #ffffff;
   margin: 0 0 30px 0;
@@ -157,8 +157,8 @@
 
 .person-page-loading,
 .person-page-error {
-  background-color: #2a2a2a;
-  color: #ffffff;
+  background-color: #231f20;
+  color: #dd2d4a;
   min-height: 100vh;
   display: flex;
   align-items: center;
