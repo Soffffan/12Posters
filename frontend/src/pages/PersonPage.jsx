@@ -159,10 +159,10 @@ const PersonPage = () => {
               {films.length > 0 ? (
                 films.map((film) => (
                   <FilmCard 
-                    key={film.id} 
-                    id={film.id}
+                    key={film.id}
                     title={film.rolesText} 
                     img={film.poster} 
+                    filmId={film.id}
                   />
                 ))
               ) : (

@@ -151,9 +151,9 @@ const GenrePage = () => {
               films.map((film) => (
                 <FilmCard 
                   key={film.id} 
-                  id={film.id}
                   title={film.title} 
                   img={film.poster} 
+                  filmId={film.id}
                 />
               ))
             ) : (

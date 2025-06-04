@@ -10,7 +10,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Заглушка данных (временно используется)
+  // Mock данные
   const mockFilms = [
     { 
       id: 1,
