@@ -1,0 +1,113 @@
+.seat-map {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 20px 0;
+}
+
+.seat-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: fit-content;
+}
+
+.row-number {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    min-width: 24px;
+    text-align: center;
+}
+
+.seats-container {
+    display: flex;
+    gap: 8px;
+}
+
+.seat {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.seat.free {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.seat.free:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+}
+
+.seat.occupied {
+    background: rgba(128, 128, 128, 0.3);
+    color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(128, 128, 128, 0.5);
+    cursor: not-allowed;
+}
+
+.seat.selected {
+    background: #dd2d4a;
+    color: white;
+    border-color: #ff4757;
+    box-shadow: 0 0 15px rgba(221, 45, 74, 0.6);
+    transform: scale(1.1);
+}
+
+.seat.selected:hover {
+    background: #ff4757;
+}
+
+.seat-number {
+    pointer-events: none;
+}
+
+/* Анимация для новых выбранных мест */
+@keyframes seatSelect {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+.seat.selected {
+    animation: seatSelect 0.3s ease;
+}
+
+/* Адаптивность для карты мест */
+@media (max-width: 768px) {
+    .seat {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+    }
+
+    .seats-container {
+        gap: 6px;
+    }
+
+    .seat-row {
+        gap: 8px;
+    }
+}

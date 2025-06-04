@@ -27,7 +27,7 @@ const SessionCard = ({ sessions, context }) => {
   };
 
   const handleBuyTicket = (sessionId) => {
-    console.log(`Покупка билета на сеанс ${sessionId}`);
+    navigate(`/bookings/${sessionId}`);
   };
 
   // Группировка для страницы фильма (по кинотеатрам)

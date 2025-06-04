@@ -1,4 +1,4 @@
-const { FilmSession, Film, Cinema, CinemaHall } = require('../../models');
+const { FilmSession, Film, Cinema, CinemaHall, HallSeat } = require('../../models');
 
 //Получить все сеансы
 const getAllSessions = async (req, res) => {
