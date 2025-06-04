@@ -1,0 +1,233 @@
+.cinema-page {
+  min-height: 100vh;
+  background-color: #231f20;
+  color: white;
+  padding: 20px;
+}
+
+.cinema-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.cinema-main {
+  flex: 1;
+}
+
+.cinema-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: white;
+  padding-left: 15px;
+}
+
+.cinema-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  color: #ccc;
+  padding-left: 15px;
+}
+
+.cinema-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #444;
+}
+
+.tab-button_2 {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 15px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tab-button_2.active {
+  color: white;
+  border-bottom-color: #dd2d4a;
+}
+
+.tab-button_2.no-focus:focus {
+  outline: none;
+}
+
+.tab-content {
+  min-height: 400px;
+  padding: 15px;
+}
+
+.cinema-info {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.info-section {
+  border-bottom: 1px solid #444;
+  padding-bottom: 20px;
+}
+
+.info-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-section h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.info-section p {
+  font-size: 1.1rem;
+  color: #ccc;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.status {
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.status.open {
+  background-color: rgba(46, 204, 112, 0.11);
+  color: #2ecc70c6;
+  border: 1px solid #2ecc70c6;
+}
+
+.status.closed {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+}
+
+.halls-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hall-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(221, 45, 74, 0.1);
+  padding: 15px 20px;
+  border-radius: 8px;
+  border-left: 4px solid #dd2d4a;
+}
+
+.hall-name {
+  font-weight: 600;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.hall-seats {
+  color: #ccc;
+  font-size: 1rem;
+}
+
+.cinema-sessions {
+  width: 100%;
+}
+
+.no-sessions {
+  text-align: center;
+  padding: 50px 20px;
+  color: #ccc;
+}
+
+.no-sessions p {
+  font-size: 1.2rem;
+}
+
+.loading, .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  font-size: 1.5rem;
+  color: #ccc;
+}
+
+.error {
+  color: #dd2d4a;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .cinema-page {
+    padding: 15px;
+  }
+  
+  .cinema-title {
+    font-size: 2rem;
+  }
+  
+  .cinema-description {
+    font-size: 1rem;
+  }
+  
+  .tab-button_2 {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+  
+  .info-section h3 {
+    font-size: 1.2rem;
+  }
+  
+  .info-section p {
+    font-size: 1rem;
+  }
+  
+  .hall-item {
+    padding: 12px 15px;
+  }
+  
+  .hall-name {
+    font-size: 1rem;
+  }
+  
+  .hall-seats {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cinema-tabs {
+    flex-direction: column;
+  }
+  
+  .tab-button_2 {
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+  
+  .tab-button_2.active {
+    border-left-color: #dd2d4a;
+    border-bottom-color: transparent;
+  }
+  
+  .hall-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

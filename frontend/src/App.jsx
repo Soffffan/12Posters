@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import GenrePage from "./pages/GenrePage";
 import PersonPage from "./pages/PersonPage";
 import FilmPage from "./pages/FilmPage";
+import CinemaPage from "./pages/CinemaPage";
 import MainLayout from "./layout/MainLayout";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path="/genre/:id" element={<GenrePage />} />
           <Route path="/person/:id" element={<PersonPage />} />
           <Route path="/film/:id" element={<FilmPage />} />
+          <Route path="/cinema/:id" element={<CinemaPage />} />
         </Routes>
       </MainLayout>
     </Router>
