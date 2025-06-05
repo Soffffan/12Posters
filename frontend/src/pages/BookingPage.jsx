@@ -17,6 +17,12 @@ const BookingPage = () => {
   const [error, setError] = useState(null);
   const [bookingLoading, setBookingLoading] = useState(false);
 
+  const handleCinemaClick = (cinemaId) => {
+    if (cinemaId) {
+      navigate(`/cinema/${cinemaId}`);
+    }
+  };
+
   useEffect(() => {
     console.log('SessionId from params:', sessionId);
     
@@ -157,7 +163,7 @@ const BookingPage = () => {
                 <span className="session-time_1">{formatTime(session.time)}</span>
               </div>
               <div className="cinema-info_1">
-                <div className="cinema-name">{session.Cinema.title}</div>
+                <div className="cinema-name" onClick={() => handleCinemaClick(session.Cinema.id)}>{session.Cinema.title}</div>
                 <div className="hall-name">{session.CinemaHall.title}</div>
                 {session.Cinema.address && (
                   <div className="cinema-address">{session.Cinema.address}</div>

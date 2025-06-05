@@ -55,6 +55,5 @@ class FilmApi {
   }
 }
 
-//Экспортируем единственный экземпляр
 const filmApi = new FilmApi();
 export default filmApi;
