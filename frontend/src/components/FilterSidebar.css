@@ -23,7 +23,7 @@
   top: 0;
   left: -350px;
   width: 350px;
-  height: 100vh;
+  height: 100%;
   background-color: #231f20;
   color: white;
   transition: left 0.3s ease;
@@ -164,6 +164,7 @@
   color: white;
   font-size: 14px;
   transition: border-color 0.2s ease;
+  min-width: 10px;
 }
 
 .range-inputs input:focus {

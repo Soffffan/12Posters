@@ -172,9 +172,6 @@ const Header = () => {
               </div>
             )}
           </div>
-          <div className="profile-avatar">
-            <div className="avatar-circle"></div>
-          </div>
         </div>
       </div>
     </header>

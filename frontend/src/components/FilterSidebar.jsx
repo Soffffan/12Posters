@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import filterApi from "../api/filterApi";
 import "./FilterSidebar.css";
 
@@ -25,8 +25,24 @@ const FilterSidebar = ({
     try {
       setOptionsLoading(true);
       const options = await filterApi.getFilterOptions();
-      if (options.success) {
+      
+      // Проверяем формат ответа
+      if (options && options.success && options.data) {
         setFilterOptions(options.data);
+      } else if (options && typeof options === 'object') {
+        // Если API возвращает данные напрямую без обертки
+        setFilterOptions({
+          genres: [],
+          cities: [],
+          metros: options.metros || []
+        });
+      } else {
+        console.warn('Неожиданный формат опций фильтров:', options);
+        setFilterOptions({
+          genres: [],
+          cities: [],
+          metros: []
+        });
       }
     } catch (error) {
       console.error('Ошибка при загрузке опций фильтров:', error);
@@ -51,9 +67,17 @@ const FilterSidebar = ({
   // Отдельный useEffect для установки текущих фильтров
   useEffect(() => {
     if (isOpen) {
-      setFilters(currentFilters);
+      setFilters(prev => {
+        const currentStr = JSON.stringify(currentFilters);
+        const prevStr = JSON.stringify(prev);
+        if (currentStr !== prevStr) {
+          return { ...currentFilters };
+        }
+        return prev; // ничего не меняем, если фильтры одинаковые
+      });
     }
   }, [isOpen, currentFilters]);
+
 
   // Обработчик изменения фильтров
   const handleFilterChange = (key, value, type = 'single') => {
@@ -80,11 +104,18 @@ const FilterSidebar = ({
 
   // Применение фильтров
   const handleApplyFilters = async () => {
+    if (loading) return;
+    
     setLoading(true);
     try {
+      // Очищаем пустые значения перед отправкой
+      const cleanedFilters = filterApi.cleanFilters(filters);
+      
       // Передаем фильтры в родительский компонент
-      await onApplyFilters(filters);
-      onClose();
+      await onApplyFilters(cleanedFilters);
+      
+      // Не закрываем панель автоматически, пользователь может захотеть изменить фильтры
+      onClose(); 
     } catch (error) {
       console.error('Ошибка при применении фильтров:', error);
     } finally {
@@ -93,8 +124,20 @@ const FilterSidebar = ({
   };
 
   // Сброс фильтров
-  const handleResetFilters = () => {
+  const handleResetFilters = async () => {
+    if (loading) return;
+    
     setFilters({});
+    
+    // Применяем пустые фильтры (показываем все результаты)
+    setLoading(true);
+    try {
+      await onApplyFilters({});
+    } catch (error) {
+      console.error('Ошибка при сбросе фильтров:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Проверяем, есть ли активные фильтры
@@ -103,6 +146,12 @@ const FilterSidebar = ({
       const value = filters[key];
       return value !== null && value !== undefined && value !== '';
     });
+  };
+
+  // Закрытие панели
+  const handleClose = () => {
+    if (loading) return;
+    onClose();
   };
 
   // Компонент блока фильтра по фильмам
@@ -354,11 +403,20 @@ const FilterSidebar = ({
 
   return (
     <>
-      <div className={`filter-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}></div>
+      <div 
+        className={`filter-overlay ${isOpen ? 'open' : ''}`} 
+        onClick={handleClose}
+      ></div>
       <div className={`filter-sidebar ${isOpen ? 'open' : ''}`}>
         <div className="filter-header">
           <h2 className="filter-title">Фильтры</h2>
-          <button className="filter-close" onClick={onClose}>×</button>
+          <button 
+            className="filter-close" 
+            onClick={handleClose}
+            disabled={loading}
+          >
+            ×
+          </button>
         </div>
 
         <div className="filter-content">
@@ -391,7 +449,7 @@ const FilterSidebar = ({
             onClick={handleResetFilters}
             disabled={loading || !hasActiveFilters()}
           >
-            Сбросить
+            {loading ? 'Сброс...' : 'Сбросить'}
           </button>
           <button 
             className="filter-apply" 

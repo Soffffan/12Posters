@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SessionCard from "../components/SessionCard";
+import FilterSidebar from "../components/FilterSidebar";
 import cinemaApi from "../api/cinemaApi";
+import filterApi from "../api/filterApi";
 import "./CinemaPage.css";
 
 const CinemaPage = () => {
@@ -10,9 +12,82 @@ const CinemaPage = () => {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [currentFilters, setCurrentFilters] = useState({});
+  const [sessionsLoading, setSessionsLoading] = useState(false);
   
   const { id } = useParams();
   const navigate = useNavigate();
+
+  // Функция для применения фильтров
+  const handleApplyFilters = async (filters) => {
+    try {
+      setSessionsLoading(true);
+      setCurrentFilters(filters);
+      
+      // Получаем отфильтрованные сеансы для кинотеатра
+      const response = await filterApi.getFilteredSessionsForCinema(id, filters);
+      
+      // Проверяем формат ответа и извлекаем данные
+      let filteredSessions = [];
+      if (response && response.success && response.data) {
+        filteredSessions = response.data;
+      } else if (Array.isArray(response)) {
+        filteredSessions = response;
+      } else if (response && response.sessions) {
+        filteredSessions = response.sessions;
+      } else {
+        console.warn('Неожиданный формат ответа от API:', response);
+        filteredSessions = [];
+      }
+      
+      setSessions(filteredSessions);
+      
+      // Показываем уведомление о количестве найденных сеансов
+      if (filteredSessions.length === 0) {
+        console.log('Сеансы по заданным фильтрам не найдены');
+      } else {
+        console.log(`Найдено сеансов: ${filteredSessions.length}`);
+      }
+      
+    } catch (error) {
+      console.error("Ошибка при применении фильтров:", error);
+      setError("Не удалось загрузить отфильтрованные сеансы");
+      
+      // В случае ошибки загружаем все сеансы заново
+      try {
+        const allSessions = await cinemaApi.getFilmSessionsByCinemaId(id);
+        setSessions(allSessions);
+      } catch (fallbackError) {
+        console.error("Ошибка при загрузке всех сеансов:", fallbackError);
+      }
+    } finally {
+      setSessionsLoading(false);
+    }
+  };
+
+  // Проверяем, есть ли активные фильтры
+  const hasActiveFilters = () => {
+    return filterApi.hasActiveFilters(currentFilters);
+  };
+
+  // Функция для сброса фильтров и загрузки всех сеансов
+  const handleResetFilters = async () => {
+    try {
+      setSessionsLoading(true);
+      setCurrentFilters({});
+      
+      // Загружаем все сеансы кинотеатра без фильтров
+      const allSessions = await cinemaApi.getFilmSessionsByCinemaId(id);
+      setSessions(allSessions);
+      
+    } catch (error) {
+      console.error("Ошибка при сбросе фильтров:", error);
+      setError("Не удалось загрузить сеансы");
+    } finally {
+      setSessionsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchCinemaData = async () => {
@@ -87,6 +162,24 @@ const CinemaPage = () => {
             </button>
           </div>
 
+          {/* Кнопки управления фильтрами */}
+          {activeTab === "sessions" && (
+            <div className="filter-controls">
+              <button
+                className="filter-button"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                disabled={sessionsLoading}
+              >
+                Фильтры 
+                {hasActiveFilters() && (
+                  <span className="filter-badge">
+                    ({filterApi.getActiveFiltersCount(currentFilters)})
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
+
           <div className="tab-content">
             {activeTab === "info" ? (
               <div className="cinema-info">
@@ -147,11 +240,22 @@ const CinemaPage = () => {
               </div>
             ) : (
               <div className="cinema-sessions">
-                {sessions.length > 0 ? (
-                  <SessionCard sessions={sessions} context="cinema" />
+                {sessionsLoading ? (
+                  <div className="sessions-loading">
+                    <p>Загрузка сеансов...</p>
+                  </div>
+                ) : sessions.length > 0 ? (
+                  <>
+                    <SessionCard sessions={sessions} context="cinema" />
+                  </>
                 ) : (
                   <div className="no-sessions">
-                    <p>Сеансы для этого кинотеатра не найдены</p>
+                    <p>
+                      {hasActiveFilters() 
+                        ? "Сеансы по заданным фильтрам не найдены. Попробуйте изменить условия поиска."
+                        : "Сеансы для этого кинотеатра не найдены"
+                      }
+                    </p>
                   </div>
                 )}
               </div>
@@ -159,6 +263,16 @@ const CinemaPage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Панель фильтров */}
+      <FilterSidebar
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        onApplyFilters={handleApplyFilters}
+        mode="cinema"
+        cinemaId={id}
+        currentFilters={currentFilters}
+      />
     </div>
   );
 };
