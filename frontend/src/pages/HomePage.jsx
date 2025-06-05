@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import FilmCard from "../components/FilmCard";
 import FilterSidebar from "../components/FilterSidebar";
 import filmApi from "../api/filmApi";
+import filterApi from "../api/filterApi";
 import "./HomePage.css";
 
 const HomePage = () => {
@@ -9,6 +10,7 @@ const HomePage = () => {
   const [films, setFilms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentFilters, setCurrentFilters] = useState({});
 
   // Mock данные
   const mockFilms = [
@@ -64,6 +66,9 @@ const HomePage = () => {
     },
   ];
 
+  // Мемоизируем объект фильтров для предотвращения бесконечного цикла
+  const memoizedCurrentFilters = useMemo(() => currentFilters, [currentFilters]);
+
   // Загрузка фильмов при монтировании компонента
   useEffect(() => {
     loadFilms();
@@ -74,13 +79,19 @@ const HomePage = () => {
       setLoading(true);
       setError(null);
       
-      // Пока используем заглушку
-      //setFilms(mockFilms);
-      
-      
-      const filmsData = await filmApi.getAllFilmsBasic();
-      setFilms(filmsData);
-      
+      // Если есть активные фильтры, используем API фильтрации
+      if (Object.keys(currentFilters).length > 0) {
+        const filteredData = await filterApi.getFilteredFilms(currentFilters);
+        if (filteredData.success) {
+          setFilms(filteredData.data);
+        } else {
+          throw new Error('Ошибка при фильтрации фильмов');
+        }
+      } else {
+        // Иначе загружаем все фильмы
+        const filmsData = await filmApi.getAllFilmsBasic();
+        setFilms(filmsData);
+      }
       
     } catch (err) {
       console.error('Ошибка при загрузке фильмов:', err);
@@ -92,6 +103,35 @@ const HomePage = () => {
     }
   };
 
+  const handleApplyFilters = async (filters) => {
+    try {
+      setLoading(true);
+      setCurrentFilters(filters);
+
+      // Если фильтры пустые, загружаем все фильмы
+      if (Object.keys(filters).length === 0) {
+        const filmsData = await filmApi.getAllFilmsBasic();
+        setFilms(filmsData);
+      } else {
+        // Применяем фильтры
+        const filteredData = await filterApi.getFilteredFilms(filters);
+        
+        if (filteredData.success) {
+          setFilms(filteredData.data);
+          console.log('Отфильтрованные фильмы:', filteredData.data); // Теперь выводим данные, только если они есть
+        } else {
+          throw new Error('Ошибка при фильтрации фильмов');
+        }
+      }
+    } catch (err) {
+      console.error('Ошибка при применении фильтров:', err);
+      setError('Ошибка при применении фильтров');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   return (
     <div className="home-container">
       <div className="home-content">
@@ -101,10 +141,19 @@ const HomePage = () => {
             onClick={() => setIsFilterOpen(!isFilterOpen)}
           >
             Фильтр
+            {Object.keys(currentFilters).length > 0 && (
+              <span className="filter-count">({Object.keys(currentFilters).length})</span>
+            )}
           </button>
         </div>
 
-        {isFilterOpen && <FilterSidebar />}
+        <FilterSidebar
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+          onApplyFilters={handleApplyFilters}
+          mode="home"
+          currentFilters={memoizedCurrentFilters}
+        />
 
         {loading && (
           <div className="loading-message">
@@ -120,14 +169,20 @@ const HomePage = () => {
 
         {!loading && (
           <div className="films-grid">
-            {films.map((film) => (
-              <FilmCard 
-                key={film.id} 
-                title={film.title} 
-                img={film.poster} 
-                filmId={film.id}
-              />
-            ))}
+            {films.length > 0 ? (
+              films.map((film) => (
+                <FilmCard 
+                  key={film.id} 
+                  title={film.title} 
+                  img={film.poster} 
+                  filmId={film.id}
+                />
+              ))
+            ) : (
+              <div className="no-results">
+                Фильмы не найдены
+              </div>
+            )}
           </div>
         )}
       </div>

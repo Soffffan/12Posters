@@ -72,7 +72,6 @@
   }
 }
 
-/* Стили для состояний загрузки и ошибок */
 .loading-message,
 .error-message {
   text-align: center;

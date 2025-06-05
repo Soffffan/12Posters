@@ -20,7 +20,7 @@ app.use('/api/films', require('./routes/user/filmRoutes'));
 app.use('/api/cinemas', require('./routes/user/cinemaRoutes'));
 app.use('/api/sessions', require('./routes/user/sessionRoutes'));
 app.use('/api/person', require('./routes/user/personRoutes'));
-// app.use('/api/filters', require('./routes/user/filterRoutes'));
+app.use('/api/filters', require('./routes/user/filterRoutes'));
 app.use('/api/bookings', require('./routes/user/bookingRoutes'));
 
 async function startServer() {

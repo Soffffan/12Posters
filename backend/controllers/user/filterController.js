@@ -1,145 +1,244 @@
-const {  Film, FilmGenre, Genre, RoleInCinema, People, FilmSession, Cinema} = require('../../models');
+const { Film, Genre, People, RoleInCinema, Cinema, FilmSession } = require('../../models');
+const FilmFilterBuilder = require('../../utils/builders/filmFilterBuilder');
+const FilmFilterDirector = require('../../utils/builders/filmFilterDirector');
 
-const FilmFilterBuilder = require('../utils/builders/filmFilterBuilder');
-const FilmFilterDirector = require('../utils/builders/filmFilterDirector');
-const { buildSessionFilter } = require('../utils/builders/sessionFilterBuilder');
-const { buildCinemaFilter } = require('../utils/builders/cinemaFilterBuilder');
-
-const filterFilmsMain = async (req, res) => {
+// Получение опций для фильтров (жанры, города, метро)
+const getFilterOptions = async (req, res) => {
   try {
-    const filters = req.query;
-
-    const filmBuilder = new FilmFilterBuilder();
-    const filmDirector = new FilmFilterDirector(filmBuilder);
-    const { filmWhere, genreWhere, peopleWhere } = filmDirector.construct(filters);
-
-    const sessionWhere = buildSessionFilter(filters);
-    const cinemaWhere = buildCinemaFilter(filters);
-
-    const films = await Film.findAll({
-      where: filmWhere,
-      include: [
-        {
-          model: FilmGenre,
-          include: [
-            {
-              model: Genre,
-              where: genreWhere || undefined,
-              required: !!genreWhere
-            }
-          ],
-          required: !!genreWhere
-        },
-        {
-          model: RoleInCinema,
-          include: [
-            {
-              model: People,
-              where: peopleWhere || undefined,
-              required: !!peopleWhere
-            }
-          ],
-          required: !!peopleWhere
-        },
-        {
-          model: FilmSession,
-          where: sessionWhere,
-          include: [
-            {
-              model: Cinema,
-              where: cinemaWhere
-            }
-          ],
-          required: true
-        }
-      ]
+    // Получаем все жанры
+    const genres = await Genre.findAll({
+      attributes: ['id', 'title'],
+      order: [['title', 'ASC']]
     });
 
-    res.json(films);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Ошибка фильтрации на главной', error: err.message });
+    // Получаем все уникальные города
+    const cities = await Cinema.findAll({
+      attributes: ['city'],
+      group: ['city'],
+      order: [['city', 'ASC']]
+    });
+
+    // Получаем все уникальные станции метро
+    const metros = await Cinema.findAll({
+      attributes: ['metro'],
+      where: {
+        metro: {
+          [require('sequelize').Op.not]: null
+        }
+      },
+      group: ['metro'],
+      order: [['metro', 'ASC']]
+    });
+
+    res.json({
+      success: true,
+      data: {
+        genres: genres,
+        cities: cities.map(c => c.city),
+        metros: metros.map(m => m.metro)
+      }
+    });
+  } catch (error) {
+    console.error('Ошибка при получении опций фильтров:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при получении опций фильтров',
+      error: error.message
+    });
   }
 };
 
-const filterFilm = async (req, res) => {
+// Фильтрация фильмов для главной страницы
+const getFilteredFilms = async (req, res) => {
   try {
-    const filmId = req.params.id;
-    const filters = req.query;
+    const builder = new FilmFilterBuilder();
+    const director = new FilmFilterDirector(builder);
+    
+    // Строим фильтры из query параметров
+    const filters = director.construct(req.query);
+    
+    // Базовый запрос
+    const queryOptions = {
+      attributes: ['id', 'title', 'poster', 'rating', 'ageRating', 'duration', 'releaseDate'],
+      where: filters.filmWhere,
+      include: [],
+      distinct: true
+    };
 
-    const sessionWhere = buildSessionFilter(filters);
-    const cinemaWhere = buildCinemaFilter(filters);
+    if (filters.genreWhere) {
+      queryOptions.include.push({
+        model: Genre,
+        through: { attributes: [] },
+        where: filters.genreWhere,
+        required: true
+      });
+    }
 
-    const sessions = await FilmSession.findAll({
+    if (filters.peopleWhere) {
+      queryOptions.include.push({
+        model: RoleInCinema, // Сначала RoleInCinema
+        required: true,       // Это нужно, чтобы гарантировать, что фильм имеет связанного человека
+        include: [{
+          model: People,     // Затем добавляем People
+          where: filters.peopleWhere,
+          required: true     // Убедитесь, что только фильмы с указанными людьми будут включены
+        }]
+      });
+    }
+
+
+    if (filters.cinemaWhere || filters.sessionWhere) {
+      const sessionInclude = {
+        model: FilmSession,
+        required: true,
+        include: []
+      };
+
+      if (filters.sessionWhere) {
+        sessionInclude.where = filters.sessionWhere;
+      }
+
+      if (filters.cinemaWhere) {
+        sessionInclude.include.push({
+          model: Cinema,
+          where: filters.cinemaWhere,
+          required: true
+        });
+      }
+
+      queryOptions.include.push(sessionInclude);
+    }
+
+    const films = await Film.findAll(queryOptions);
+
+
+    res.json({
+      success: true,
+      data: films,
+      count: films.length
+    });
+  } catch (error) {
+    console.error('Ошибка при фильтрации фильмов:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при фильтрации фильмов',
+      error: error.message
+    });
+  }
+};
+
+// Фильтрация сеансов для страницы фильма
+const getFilteredSessionsForFilm = async (req, res) => {
+  try {
+    const { filmId } = req.params;
+    const builder = new FilmFilterBuilder();
+    const director = new FilmFilterDirector(builder);
+    
+    // Строим фильтры из query параметров
+    const filters = director.construct(req.query);
+    
+    const queryOptions = {
       where: {
-        ...sessionWhere,
-        FilmId: filmId
+        filmId: filmId,
+        ...(filters.sessionWhere || {})
       },
       include: [
         {
           model: Cinema,
-          where: cinemaWhere
+          where: filters.cinemaWhere || {},
+          required: filters.cinemaWhere ? true : false
         }
-      ]
-    });
+      ],
+      order: [['date', 'ASC'], ['time', 'ASC']]
+    };
 
-    res.json(sessions);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Ошибка фильтрации по кинотеатрам и сеансам у фильма', error: err.message });
+    const sessions = await FilmSession.findAll(queryOptions);
+
+    res.json({
+      success: true,
+      data: sessions,
+      count: sessions.length
+    });
+  } catch (error) {
+    console.error('Ошибка при фильтрации сеансов для фильма:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при фильтрации сеансов для фильма',
+      error: error.message
+    });
   }
 };
 
-const filterCinema = async (req, res) => {
+// Фильтрация сеансов для страницы кинотеатра
+const getFilteredSessionsForCinema = async (req, res) => {
   try {
-    const cinemaId = req.params.id;
-    const filters = req.query;
-
-    const filmBuilder = new FilmFilterBuilder();
-    const filmDirector = new FilmFilterDirector(filmBuilder);
-    const { filmWhere, genreWhere, peopleWhere } = filmDirector.construct(filters);
-
-    const sessionWhere = buildSessionFilter(filters);
-
-    const films = await Film.findAll({
-      where: filmWhere,
+    const { cinemaId } = req.params;
+    const builder = new FilmFilterBuilder();
+    const director = new FilmFilterDirector(builder);
+    
+    // Строим фильтры из query параметров
+    const filters = director.construct(req.query);
+    
+    const queryOptions = {
+      where: {
+        cinemaId: cinemaId,
+        ...(filters.sessionWhere || {})
+      },
       include: [
         {
-          model: FilmGenre,
-          include: [
-            {
-              model: Genre,
-              where: genreWhere || undefined
-            }
-          ],
-          required: !!genreWhere
-        },
-        {
-          model: RoleInCinema,
-          include: [
-            {
-              model: People,
-              where: peopleWhere || undefined
-            }
-          ],
-          required: !!peopleWhere
-        },
-        {
-          model: FilmSession,
-          where: {
-            ...sessionWhere,
-            CinemaId: cinemaId
-          },
-          required: true
+          model: Film,
+          where: filters.filmWhere || {},
+          required: filters.filmWhere ? true : false,
+          include: []
         }
-      ]
-    });
+      ],
+      order: [['date', 'ASC'], ['time', 'ASC']]
+    };
 
-    res.json(films);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Ошибка фильтрации по фильмам и сеансам в кинотеатре', error: err.message });
+    // Если есть фильтры по жанрам или людям, добавляем их к фильму
+    if (filters.genreWhere) {
+      queryOptions.include[0].include.push({
+        model: Genre,
+        through: { attributes: [] },
+        where: filters.genreWhere,
+        required: true
+      });
+    }
+
+    if (filters.peopleWhere) {
+      queryOptions.include.push({
+        model: People,
+        through: { attributes: [] }, // Промежуточная таблица RoleInCinema
+        where: filters.peopleWhere,
+        required: true,
+        include: [{
+          model: RoleInCinema,
+          required: true
+        }]
+      });
+    }
+
+
+    const sessions = await FilmSession.findAll(queryOptions);
+
+    res.json({
+      success: true,
+      data: sessions,
+      count: sessions.length
+    });
+  } catch (error) {
+    console.error('Ошибка при фильтрации сеансов для кинотеатра:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при фильтрации сеансов для кинотеатра',
+      error: error.message
+    });
   }
 };
 
-module.exports = {  filterFilmsMain,  filterFilm,  filterCinema};
+module.exports = {
+  getFilterOptions,
+  getFilteredFilms,
+  getFilteredSessionsForFilm,
+  getFilteredSessionsForCinema
+};

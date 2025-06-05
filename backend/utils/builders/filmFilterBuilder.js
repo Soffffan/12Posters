@@ -7,6 +7,8 @@ class FilmFilterBuilder extends FilterBuilderInterface {
     this.filmWhere = {};
     this.genreWhere = null;
     this.peopleWhere = null;
+    this.cinemaWhere = null;
+    this.sessionWhere = null;
   }
 
   setTitle(title) {
@@ -58,12 +60,48 @@ class FilmFilterBuilder extends FilterBuilderInterface {
   setPeopleFilter(peopleId, name, surname) {
     if (peopleId) {
       this.peopleWhere = { id: parseInt(peopleId) };
-    } else {
+    } else if (name || surname) {
       this.peopleWhere = {};
       if (name) this.peopleWhere.name = { [Op.like]: `%${name}%` };
       if (surname) this.peopleWhere.surname = { [Op.like]: `%${surname}%` };
-      if (Object.keys(this.peopleWhere).length === 0) {
-        this.peopleWhere = null;
+    }
+    return this;
+  }
+
+  // Новые методы для фильтрации по кинотеатрам
+  setCinemaFilter(city, metro, cinemaTitle, address) {
+    if (city || metro || cinemaTitle || address) {
+      this.cinemaWhere = {};
+      if (city) this.cinemaWhere.city = city;
+      if (metro) this.cinemaWhere.metro = { [Op.like]: `%${metro}%` };
+      if (cinemaTitle) this.cinemaWhere.title = { [Op.like]: `%${cinemaTitle}%` };
+      if (address) this.cinemaWhere.address = { [Op.like]: `%${address}%` };
+    }
+    return this;
+  }
+
+  // Метод для фильтрации по сеансам (если нужно на главной)
+  setSessionFilter(date, startTime, startTimeFrom, startTimeTo, ticketPriceMin, ticketPriceMax) {
+    if (date || startTime || startTimeFrom || startTimeTo || ticketPriceMin || ticketPriceMax) {
+      this.sessionWhere = {};
+      
+      if (date) this.sessionWhere.date = date;
+      if (startTime) this.sessionWhere.time = startTime;
+      
+      if (startTimeFrom && startTimeTo) {
+        this.sessionWhere.time = {
+          [Op.between]: [startTimeFrom, startTimeTo]
+        };
+      }
+
+      if (ticketPriceMin && ticketPriceMax) {
+        this.sessionWhere.ticketPrice = {
+          [Op.between]: [parseInt(ticketPriceMin), parseInt(ticketPriceMax)]
+        };
+      } else if (ticketPriceMin) {
+        this.sessionWhere.ticketPrice = { [Op.gte]: parseInt(ticketPriceMin) };
+      } else if (ticketPriceMax) {
+        this.sessionWhere.ticketPrice = { [Op.lte]: parseInt(ticketPriceMax) };
       }
     }
     return this;
@@ -73,7 +111,9 @@ class FilmFilterBuilder extends FilterBuilderInterface {
     return {
       filmWhere: this.filmWhere,
       genreWhere: this.genreWhere,
-      peopleWhere: this.peopleWhere
+      peopleWhere: this.peopleWhere,
+      cinemaWhere: this.cinemaWhere,
+      sessionWhere: this.sessionWhere
     };
   }
 }

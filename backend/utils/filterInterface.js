@@ -6,6 +6,8 @@ class FilterBuilderInterface {
   setReleaseDate() { throw new Error('setReleaseDate() not implemented'); }
   setGenreFilter() { throw new Error('setGenreFilter() not implemented'); }
   setPeopleFilter() { throw new Error('setPeopleFilter() not implemented'); }
+  setCinemaFilter() { throw new Error('setCinemaFilter() not implemented'); }
+  setSessionFilter() { throw new Error('setSessionFilter() not implemented'); }
   build() { throw new Error('build() not implemented'); }
 }
 

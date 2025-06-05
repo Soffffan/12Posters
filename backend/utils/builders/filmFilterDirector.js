@@ -12,6 +12,15 @@ class FilmFilterDirector {
       .setReleaseDate(filters.releaseDateFrom, filters.releaseDateTo)
       .setGenreFilter(filters.genreId, filters.genreTitle)
       .setPeopleFilter(filters.peopleId, filters.peopleName, filters.peopleSurname)
+      .setCinemaFilter(filters.city, filters.metro, filters.cinemaTitle, filters.address)
+      .setSessionFilter(
+        filters.date, 
+        filters.startTime, 
+        filters.startTimeFrom, 
+        filters.startTimeTo, 
+        filters.ticketPriceMin, 
+        filters.ticketPriceMax
+      )
       .build();
   }
 }
